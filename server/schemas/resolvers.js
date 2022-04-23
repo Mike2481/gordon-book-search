@@ -65,7 +65,9 @@ const resolvers = {
 
         },
         removeBook: async (parent, args) => {
-            
+
         }
     }
 }
+
+module.exports = resolvers;
