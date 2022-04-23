@@ -5,37 +5,16 @@ const { signToken } = require('../utils/auth');
 const resolvers = {
 
     Query: {
-
-        // async getSingleUser({ user = null, params }, res) {
-        //     const foundUser = await User.findOne({
-        //       $or: [{ _id: user ? user._id : params.id }, { username: params.username }],
-        //     });
-        
-        //     if (!foundUser) {
-        //       return res.status(400).json({ message: 'Cannot find a user with this id!' });
-        //     }
-        
-        //     res.json(foundUser);
-        //   },
         // get user
-        // me: async (parent, args, context) => {
-        //     if (context.user) {
-        //         const userData = await User.findOne({ _id: context.user._id })
-        //             .select('-__v -password')
-        //             .populate('thoughts')
-        //             .populate('friends');
+        me: async (parent, args, context) => {
+            if (context.user) {
+                const userData = await User.findOne({ _id: context.user._id })
+                    .select('-__v -password')
+                return userData;
+            }
 
-        //         return userData;
-        //     }
-
-        //     throw new AuthenticationError('Not logged in');
-        // },
-
-        // get all books
-        // books: async (parent, { username }) => {
-        //     const params = username ? { username } : {};
-        //     return Book.find(params).sort({ createdAt: -1 });
-        // }
+            throw new AuthenticationError('Not logged in');
+        },
     },
     Mutation: {
         login: async (parent, { email, password }) => {
@@ -44,13 +23,11 @@ const resolvers = {
             if (!user) {
                 throw new AuthenticationError('Incorrect credentials');
             }
-
             const correctPw = await user.isCorrectPassword(password);
 
             if (!correctPw) {
                 throw new AuthenticationError('Incorrect credentials');
             }
-
             const token = signToken(user);
 
             return { token, user };
@@ -61,13 +38,33 @@ const resolvers = {
 
             return { token, user };
         },
-        saveBook: async (parent, args) => {
+        // save book for user
+        saveBook: async (parent, { newBook }, context) => {
+            if (context.user) {
+                const updatedUser = await User.findByIdAndUpdate(
+                    {_id: context.user._id},
+                    // push new book to savedBooks and return new result
+                    {$push: { savedBooks: newBook }},
+                    {new: true}
+                );
+                return updatedUser;
+            }
+            throw new AuthenticationError('Must be logged in!')
 
         },
-        removeBook: async (parent, args) => {
-
-        }
-    }
-}
+        removeBook: async (parent, { bookId }, context) => {
+            if(context.user) {
+                const updatedUser = await User.findByIdAndUpdate(
+                    {_id: context.user._id},
+                    // pull book chosen by id from savedBooks and return new result
+                    {$pull: {savedBooks: {bookId}}},
+                    {new: true}
+                );
+                return updatedUser;
+            }
+            throw new AuthenticationError('Must be logged in!')
+        },
+    },
+};
 
 module.exports = resolvers;
