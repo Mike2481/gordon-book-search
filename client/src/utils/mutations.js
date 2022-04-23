@@ -23,20 +23,41 @@ export const ADD_USER = gql`
     }
   }
 `;
+// is this all that need to be here for new user?
+
 
 export const SAVE_BOOK = gql`
-  mutation saveBook($id: ID!) {
-      saveBook(bookId: $id) {
-        bookId: google book API
-        authors: []
-        description: String
-        title: String
-        image: Img
-        link: String
-      }
+  mutation saveBook($newBook: BookInput!) {
+      saveBook(newBook: $newBook) {
+        _id
+        username
+        email
+        savedBooks {
+            authors
+            description
+            bookId
+            image
+            link
+            title
+        }
+    }
   }
 `;
 
 export const REMOVE_BOOK = gql`
-
+  mutation removeBook($bookId: ID!) {
+      removeBook(bookId: $bookId) {
+          _id
+          username
+          email
+          savedBooks {
+              authors
+              description
+              bookId
+              image
+              link
+              title
+          }
+      }
+  }
 `;
