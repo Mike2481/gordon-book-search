@@ -1,4 +1,4 @@
-const { User, Book } = require('../models');
+const { User } = require('../models');
 const { AuthenticationError } = require('apollo-server-express');
 const { signToken } = require('../utils/auth');
 
@@ -17,6 +17,12 @@ const resolvers = {
         },
     },
     Mutation: {
+        addUser: async (parent, args) => {
+            const user = await User.create(args);
+            const token = signToken(user);
+
+            return { token, user };
+        },
         login: async (parent, { email, password }) => {
             const user = await User.findOne({ email });
 
@@ -32,20 +38,14 @@ const resolvers = {
 
             return { token, user };
         },
-        addUser: async (parent, args) => {
-            const user = await User.create(args);
-            const token = signToken(user);
-
-            return { token, user };
-        },
         // save book for user
         saveBook: async (parent, { newBook }, context) => {
             if (context.user) {
                 const updatedUser = await User.findByIdAndUpdate(
-                    {_id: context.user._id},
+                    { _id: context.user._id },
                     // push new book to savedBooks and return new result
-                    {$push: { savedBooks: newBook }},
-                    {new: true}
+                    { $push: { savedBooks: newBook } },
+                    { new: true }
                 );
                 return updatedUser;
             }
@@ -55,10 +55,10 @@ const resolvers = {
         removeBook: async (parent, { bookId }, context) => {
             if(context.user) {
                 const updatedUser = await User.findByIdAndUpdate(
-                    {_id: context.user._id},
+                    { _id: context.user._id },
                     // pull book chosen by id from savedBooks and return new result
-                    {$pull: {savedBooks: {bookId}}},
-                    {new: true}
+                    { $pull: {savedBooks: {bookId}} },
+                    { new: true }
                 );
                 return updatedUser;
             }

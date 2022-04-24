@@ -1,5 +1,7 @@
+
+
 {
-  "name": "gordon-book-search",
+  "name": "googlebooks-app",
   "version": "1.0.0",
   "description": "",
   "main": "server/server.js",
@@ -9,18 +11,14 @@
     "install": "cd server && npm i && cd ../client && npm i",
     "build": "cd client && npm run build"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Mike2481/gordon-book-search.git"
-  },
   "keywords": [],
-  "author": "Michael Gordon",
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Mike2481/gordon-book-search/issues"
-  },
-  "homepage": "https://github.com/Mike2481/gordon-book-search#readme",
   "devDependencies": {
     "concurrently": "^5.1.0"
+  },
+  "dependencies": {
+    "apollo-client": "^2.6.10",
+    "graphql": "^15.5.2"
   }
 }
